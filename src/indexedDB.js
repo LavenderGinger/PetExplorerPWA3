@@ -1,4 +1,4 @@
-import { openDB } from '../node_modules/idb';
+import { openDB } from "https://unpkg.com/idb?module";
 
 const DB_NAME = "PetExplorerDB";
 const STORE_NAME = "pets";
