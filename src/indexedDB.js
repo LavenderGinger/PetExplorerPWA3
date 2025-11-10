@@ -1,4 +1,4 @@
-import { openDB } from 'idb';
+import { openDB } from '../node_modules/idb';
 
 const DB_NAME = "PetExplorerDB";
 const STORE_NAME = "pets";
