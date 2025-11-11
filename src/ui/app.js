@@ -5,19 +5,21 @@ import { syncIndexedDBToFirebase } from '../sync.js';
 
 export async function createRecord(data) {
   if (navigator.onLine) {
+    notifyUser('Online!');
     try {
-      //const id = await addRecord('pets', data);
+      const id = await addRecord('pets', data);
       notifyUser('Record saved online');
       return id;
     } catch (error) {
       notifyUser(`Online save failed: ${error.message}. Saving offline.`);
       data.synced = false;
-      //await addIndexedDBRecord(data);
+      await addIndexedDBRecord(data);
     }
   } else {
+    notifyUser('Offline!');
     data.synced = false;
-    data.id = 12345;
-    //await addIndexedDBRecord(data);
+    //data.id = 12345;
+    await addIndexedDBRecord(data);
     notifyUser(`You are offline, record ${data} saved locally`);
   }
 }
@@ -87,7 +89,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const petType = form.petType.value.trim();
 
     if (petName && petType) {
+      notifyUser('Got name and type, moving in');
       try {
+        notifyUser('Just before create record');
         await createRecord({ name: petName, type: petType, synced: false });
         notifyUser('Pet saved successfully!');
         form.reset();
