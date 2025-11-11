@@ -6,13 +6,13 @@ import { syncIndexedDBToFirebase } from '../sync.js';
 export async function createRecord(data) {
   if (navigator.onLine) {
     try {
-      const id = await addRecord('pets', data);
+      //const id = await addRecord('pets', data);
       notifyUser('Record saved online');
       return id;
     } catch (error) {
       notifyUser(`Online save failed: ${error.message}. Saving offline.`);
       data.synced = false;
-      await addIndexedDBRecord(data);
+      //await addIndexedDBRecord(data);
     }
   } else {
     data.synced = false;
