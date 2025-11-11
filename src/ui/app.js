@@ -3,7 +3,6 @@ import { addIndexedDBRecord, getIndexedDBRecords, updateIndexedDBRecord, deleteI
 import { notifyUser } from './notifications.js';
 import { syncIndexedDBToFirebase } from '../sync.js';
 
-// Create a new record (online or offline)
 export async function createRecord(data) {
   if (navigator.onLine) {
     try {
@@ -22,13 +21,13 @@ export async function createRecord(data) {
   }
 }
 
-// Read all records from online or offline storage
+// Read all records (online with fallback offline)
 export async function readRecords() {
   if (navigator.onLine) {
     try {
       return await getRecords('pets');
     } catch (error) {
-      notifyUser(`Error fetching online records: ${error.message}. Falling back to offline data.`);
+      notifyUser(`Fetching online failed: ${error.message}. Using offline data.`);
       return await getIndexedDBRecords();
     }
   } else {
@@ -36,14 +35,14 @@ export async function readRecords() {
   }
 }
 
-// Update a record by ID (online or offline)
+// Update record (online or offline)
 export async function updateRecordById(id, data) {
   if (navigator.onLine) {
     try {
       await updateRecord('pets', id, data);
       notifyUser('Record updated online');
     } catch (error) {
-      notifyUser(`Online update failed: ${error.message}. Saving update offline.`);
+      notifyUser(`Online update failed: ${error.message}. Saving offline.`);
       data.id = id;
       data.synced = false;
       await updateIndexedDBRecord(data);
@@ -56,14 +55,14 @@ export async function updateRecordById(id, data) {
   }
 }
 
-// Delete a record by ID (online or offline)
+// Delete record (online or offline)
 export async function deleteRecordById(id) {
   if (navigator.onLine) {
     try {
       await deleteRecord('pets', id);
       notifyUser('Record deleted online');
     } catch (error) {
-      notifyUser(`Online delete failed: ${error.message}. Marking offline delete.`);
+      notifyUser(`Online delete failed: ${error.message}. Deleting offline.`);
       await deleteIndexedDBRecord(id);
     }
   } else {
@@ -72,13 +71,13 @@ export async function deleteRecordById(id) {
   }
 }
 
-// Sync offline data when back online
+// Sync offline data to Firebase on reconnect
 window.addEventListener('online', () => {
   notifyUser("You're back online! Syncing offline data...");
   syncIndexedDBToFirebase().catch(error => notifyUser(`Sync failed: ${error.message}`));
 });
 
-// DOM load event for form interaction
+// DOM content loaded event — form handler for adding pets
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('petForm');
   form.addEventListener('submit', async (event) => {
@@ -86,16 +85,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const petName = form.petName.value.trim();
     const petType = form.petType.value.trim();
 
-    if (petName && petType) {
-      try {
-        await createRecord({ name: petName, type: petType, synced: false });
-        notifyUser('Pet saved successfully!');
-        form.reset();
-      } catch (err) {
-        notifyUser('Failed to save pet: ' + err.message);
-      }
-    } else {
+    if (!petName || !petType) {
       notifyUser('Please fill out both fields.');
+      return;
+    }
+
+    try {
+      await createRecord({ name: petName, type: petType, synced: false });
+      notifyUser('Pet saved successfully!');
+      form.reset();
+    } catch (err) {
+      notifyUser('Failed to save pet: ' + err.message);
     }
   });
 });
