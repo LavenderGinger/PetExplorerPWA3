@@ -26,16 +26,6 @@ const urlsToCache = [
   'images/pexels-vika-glitter-392079-18011803.jpg'
 ];
 
-// Install event - cache app assets
-self.addEventListener('install', event => {
-  console.log('Service worker installing...');
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      console.log("Service worker: caching files");
-      return cache.addAll(urlsToCache);
-    })
-  );
-});
 
 // Activate event - clean old caches
 self.addEventListener('activate', event => {
@@ -54,31 +44,12 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch event - serve cached assets if offline
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    (async () => {
-      if (event.request.method !== 'GET') {
-        return fetch(event.request);
-      }
-      const cachedResponse = await caches.match(event.request);
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      try {
-        const networkResponse = await fetch(event.request);
-        const cache = await caches.open(CACHE_NAME);
-        cache.put(event.request, networkResponse.clone());
-        return networkResponse;
-      } catch (error) {
-        console.error('Fetch failed; returning offline page instead.', error);
-        return caches.match('offline.html');
-      }
-    })()
+
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
   );
 });
-
-
 
 self.addEventListener('fetch', event => {
   event.respondWith(
