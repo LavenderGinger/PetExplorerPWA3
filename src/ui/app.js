@@ -4,8 +4,6 @@ import { notifyUser } from './notifications.js';
 import { syncIndexedDBToFirebase } from '../sync.js';
 
 export async function createRecord(data) {
-  //if (navigator.onLine) {
-    //notifyUser('Online!');
     try {
       const id = await addRecord('pets', data);
       notifyUser('Record saved online');
@@ -15,14 +13,9 @@ export async function createRecord(data) {
       data.synced = false;
       await addIndexedDBRecord(data);
     }
-  //} else {
-   // notifyUser('Offline!');
-   // data.synced = false;
-   // data.id = 'local-'+Math.floor(Math.random()*10000);
-   // await addIndexedDBRecord(data);
-   // notifyUser(`You are offline, record ${data} saved locally`);
- // }
-}
+    notifyUser(`You are offline, record saved locally`);
+  }
+
 
 // Read all records from online or offline storage
 export async function readRecords() {
@@ -89,9 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const petType = form.petType.value.trim();
 
     if (petName && petType) {
-      notifyUser('Got name and type, moving in');
       try {
-        notifyUser('Just before create record');
         await createRecord({ name: petName, type: petType, synced: false });
         notifyUser('Pet saved successfully!');
         form.reset();
