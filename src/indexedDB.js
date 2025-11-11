@@ -7,10 +7,7 @@ export async function initDB() {
   return openDB(DB_NAME, 1, {
     upgrade(db) {
       if (!db.objectStoreNames.contains(STORE_NAME)) {
-        const store = db.createObjectStore(STORE_NAME, {
-          keyPath: "id",
-          autoIncrement: true
-        });
+        const store = db.createObjectStore(STORE_NAME, { keyPath: "id" });
         store.createIndex("synced", "synced");
       }
     },
@@ -19,7 +16,7 @@ export async function initDB() {
 
 export async function addIndexedDBRecord(record) {
   const db = await initDB();
-  return db.add(STORE_NAME, record); // safer to use add for new records
+  await db.put(STORE_NAME, record);
 }
 
 export async function getIndexedDBRecords() {
@@ -29,10 +26,10 @@ export async function getIndexedDBRecords() {
 
 export async function updateIndexedDBRecord(record) {
   const db = await initDB();
-  return db.put(STORE_NAME, record);
+  await db.put(STORE_NAME, record);
 }
 
 export async function deleteIndexedDBRecord(id) {
   const db = await initDB();
-  return db.delete(STORE_NAME, id);
+  await db.delete(STORE_NAME, id);
 }
