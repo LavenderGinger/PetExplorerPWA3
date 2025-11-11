@@ -11,11 +11,6 @@ const urlsToCache = [
   'rabbit.html',
   'offline.html',
   'petquiz.html',
-  'src/firebase.js',
-  'src/indexedDB.js',
-  'src/sync.js',
-  'src/ui/app.js',
-  'src/ui/notification.js',
   'materialize-v1.0.0/materialize/css/materialize.min.css',
   'materialize-v1.0.0/materialize/js/materialize.min.js',
   'images/pexels-chevanon-1108099.jpg',
@@ -75,20 +70,5 @@ self.addEventListener('fetch', event => {
         return caches.match('offline.html');
       }
     })()
-  );
-});
-
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS_TO_CACHE))
-  );
-});
-
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      if (cachedResponse) return cachedResponse;
-      return fetch(event.request);
-    })
   );
 });
