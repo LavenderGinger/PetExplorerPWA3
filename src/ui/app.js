@@ -4,13 +4,19 @@ import { notifyUser } from './notifications.js';
 import { syncIndexedDBToFirebase } from '../sync.js';
 
 export async function createRecord(data) {
-    try {
-      const id = await addRecord('pets', data);
-      return id;
-    } catch (error) {
-      data.synced = false;
-      await addIndexedDBRecord(data);
-    }
+  if (navigator.onLine) {
+      try {
+        const id = await addRecord('pets', data);
+        return id;
+      } catch (error) {
+        data.synced = false;
+        await addIndexedDBRecord(data);
+      }
+      } else {
+    data.synced = false;
+    data.id = 'local-'+Math.floor(Math.random()*10000);
+    await addIndexedDBRecord(data);
+  }
   }
 
 
