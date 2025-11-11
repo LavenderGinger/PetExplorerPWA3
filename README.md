@@ -10,3 +10,5 @@ In online mode, CRUD operations interact directly with Firebase through its Java
 
 Synchronization process and Firebase IDs:
 When the app goes online, it scans IndexedDB for unsynced records. If a record’s ID starts with “firebase-”, it updates the corresponding Firebase entry. Otherwise, it creates a new Firebase record, gets the generated ID, and updates the local record. After syncing, this process runs automatically on reconnect to keep data consistent.
+
+(For now, pressing the "Save Pet" button will send and store the data to Firebase/IndexedDB, so it can be verified in the console and in Firebase data. Pet details will be displayed on the page in future versions of this application).
