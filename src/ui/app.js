@@ -16,6 +16,7 @@ export async function createRecord(data) {
     }
   } else {
     data.synced = false;
+    data.id = 12345;
     await addIndexedDBRecord(data);
     notifyUser('You are offline, record saved locally');
   }
