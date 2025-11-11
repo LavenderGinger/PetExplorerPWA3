@@ -7,7 +7,7 @@ export async function initDB() {
   return openDB(DB_NAME, 1, {
     upgrade(db) {
       if (!db.objectStoreNames.contains(STORE_NAME)) {
-        const store = db.createObjectStore(STORE_NAME, { keyPath: "id" });
+        const store = db.createObjectStore(STORE_NAME, { keyPath: "id" , autoIncrement: true});
         store.createIndex("synced", "synced");
       }
     },
